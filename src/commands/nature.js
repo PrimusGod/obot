@@ -10,7 +10,7 @@ export default {
     const user = await User.getOrCreate(interaction.user.id);
     const selected = user.getSelectedPokemon();
     if (!selected)
-      return interaction.reply({ content: 'No Pokémon selected.', ephemeral: true });
+      return interaction.reply({ content: 'No Pokémon selected.', ephemeral: false });
 
     const options = NATURES.map(nat => ({
       label: nat.name,
@@ -27,7 +27,7 @@ export default {
     await interaction.reply({
       content: `Current nature: **${selected.nature}**\nChoose a new nature:`,
       components: [row],
-      ephemeral: true
+      ephemeral: false
     });
   }
 };

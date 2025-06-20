@@ -9,7 +9,7 @@ export default {
   async execute(interaction) {
     const user = await User.getOrCreate(interaction.user.id);
     if (user.pokemon.length > 0)
-      return interaction.reply({ content: 'You already have a Pokémon. Use /reset to start over.', ephemeral: true });
+      return interaction.reply({ content: 'You already have a Pokémon. Use /reset to start over.', ephemeral: false });
 
     const menu = new StringSelectMenuBuilder()
       .setCustomId('starter-select')
@@ -25,7 +25,7 @@ export default {
     await interaction.reply({
       content: 'Pick your starter Pokémon:',
       components: [row],
-      ephemeral: true
+      ephemeral: false
     });
   }
 };

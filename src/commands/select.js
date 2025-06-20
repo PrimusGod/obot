@@ -10,10 +10,10 @@ export default {
     const idx = interaction.options.getInteger('number') - 1;
     const user = await User.getOrCreate(interaction.user.id);
     if (idx < 0 || idx >= user.pokemon.length)
-      return interaction.reply({ content: 'Invalid Pokémon number.', ephemeral: true });
+      return interaction.reply({ content: 'Invalid Pokémon number.', ephemeral: false });
 
     user.selected = idx;
     await user.save();
-    await interaction.reply({ content: `Selected Pokémon: **${user.pokemon[idx].name}**`, ephemeral: true });
+    await interaction.reply({ content: `Selected Pokémon: **${user.pokemon[idx].name}**`, ephemeral: false });
   }
 };
