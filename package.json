@@ -1,0 +1,16 @@
+{
+  "name": "discord-pokemon-bot",
+  "version": "1.0.0",
+  "description": "A Discord Pokemon bot with MongoDB and pokeapi integration.",
+  "main": "src/bot.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/bot.js"
+  },
+  "dependencies": {
+    "discord.js": "^14.15.0",
+    "dotenv": "^16.4.5",
+    "mongoose": "^8.3.4",
+    "axios": "^1.7.2"
+  }
+}
