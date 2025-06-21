@@ -2,6 +2,39 @@ import User from '../models/User.js';
 import { handleDuelInteraction } from '../utils/duel.js';
 import { NATURES, STARTERS } from '../pokeapi/mechanics.js';
 import { fetchPokemonAbilities, getPokemonData } from '../pokeapi/index.js';
+import { EmbedBuilder, ActionRowBuilder, ButtonBuilder, ButtonStyle } from 'discord.js';
+
+const PAGE_SIZE = 10;
+
+function getPokemonPageEmbed(user, page) {
+  const start = page * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
+  const total = user.pokemon.length;
+  const pagePokemon = user.pokemon.slice(start, end);
+  return new EmbedBuilder()
+    .setTitle(`Your Pokémon (Page ${page + 1}/${Math.ceil(total / PAGE_SIZE)})`)
+    .setDescription(
+      pagePokemon.map((poke, i) =>
+        `**#${start + i + 1}:** ${poke.name} (Lv.${poke.level}) - Nature: ${poke.nature}, Ability: ${poke.ability}`
+      ).join('\n') || 'No Pokémon found.'
+    );
+}
+
+function getPaginationRow(page, total) {
+  const maxPage = Math.ceil(total / PAGE_SIZE) - 1;
+  return new ActionRowBuilder().addComponents(
+    new ButtonBuilder()
+      .setCustomId(`poke-prev-${page}`)
+      .setLabel('⬅️')
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(page === 0),
+    new ButtonBuilder()
+      .setCustomId(`poke-next-${page}`)
+      .setLabel('➡️')
+      .setStyle(ButtonStyle.Secondary)
+      .setDisabled(page === maxPage)
+  );
+}
 
 export default async (client, interaction) => {
   if (interaction.isChatInputCommand()) {
@@ -53,10 +86,27 @@ export default async (client, interaction) => {
     }
   }
 
-  // Handle buttons
+  // Handle duel buttons
   if (interaction.isButton() && interaction.customId.startsWith('duel-')) {
-    await interaction.editReply
     await handleDuelInteraction(client, interaction);
     // Inside handleDuelInteraction, use interaction.editReply instead of reply
+  }
+
+  // Handle poke pagination buttons
+  if (interaction.isButton() && interaction.customId.startsWith('poke-')) {
+    // poke-prev-X or poke-next-X
+    const [, direction, pageStr] = interaction.customId.split('-');
+    const oldPage = parseInt(pageStr, 10);
+    const user = await User.getOrCreate(interaction.user.id);
+
+    let newPage = direction === 'next' ? oldPage + 1 : oldPage - 1;
+    const maxPage = Math.ceil(user.pokemon.length / PAGE_SIZE) - 1;
+    if (newPage < 0) newPage = 0;
+    if (newPage > maxPage) newPage = maxPage;
+
+    const embed = getPokemonPageEmbed(user, newPage);
+    const row = getPaginationRow(newPage, user.pokemon.length);
+
+    await interaction.update({ embeds: [embed], components: [row] });
   }
 };

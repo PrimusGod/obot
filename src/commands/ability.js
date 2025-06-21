@@ -12,6 +12,8 @@ export default {
     if (!poke)
       return interaction.reply({ content: 'No Pokémon selected.', ephemeral: false });
 
+    await interaction.deferReply({ ephemeral: false });
+
     const abilities = await fetchPokemonAbilities(poke.id);
     const menu = new StringSelectMenuBuilder()
       .setCustomId('ability-select')
@@ -23,10 +25,9 @@ export default {
 
     const row = new ActionRowBuilder().addComponents(menu);
 
-    await interaction.reply({
+    await interaction.editReply({
       content: `Current ability: **${poke.ability}**\nChoose a new ability:`,
-      components: [row],
-      ephemeral: false
+      components: [row]
     });
   }
 };
