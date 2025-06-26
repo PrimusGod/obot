@@ -46,7 +46,7 @@ for (const file of eventFiles) {
 }
 
 // Start spawn scheduler
-// import('./scheduler/spawnScheduler.js').then(mod => mod.default(client));
+ import('./scheduler/spawnScheduler.js').then(mod => mod.default(client));
 
 // Login
 client.login(config.token);
